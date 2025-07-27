@@ -5,7 +5,7 @@ COPY package*.json ./
 ENV ROLLUP_SKIP_NODE_RESOLVE=true
 COPY . .
 ENV BACKEND_API_URL=__BACKEND_API_URL__
-RUN pnpm run build1
+RUN npm run build1
 
 FROM registry.handiansoft.net/nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
