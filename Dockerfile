@@ -111,7 +111,7 @@ COPY start_genie.sh .
 RUN chmod +x start_genie.sh
 
 FROM registry.handiansoft.net/nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=frontend-builder /app/dist /usr/share/nginx/html
 COPY nginx.config /etc/nginx/conf.d/default.conf
 
 # 启动脚本 替换__BACKEND_API_URL__为实际地址
