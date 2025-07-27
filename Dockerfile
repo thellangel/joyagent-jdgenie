@@ -8,6 +8,12 @@ COPY ui/ .
 ENV BACKEND_API_URL=__BACKEND_API_URL__
 RUN pnpm build1
 
+FROM registry.handiansoft.net/nginx:alpine as nginx-builder
+WORKDIR /app
+COPY --from=frontend-builder /app/dist /usr/share/nginx/html
+COPY nginx.config /etc/nginx/conf.d/default.conf
+EXPOSE 80
+
 # 后端构建阶段
 FROM docker.m.daocloud.io/library/maven:3.8-openjdk-17 as backend-builder
 WORKDIR /app
@@ -110,19 +116,11 @@ WORKDIR /app
 COPY start_genie.sh .
 RUN chmod +x start_genie.sh
 
-FROM registry.handiansoft.net/nginx:alpine
-COPY --from=frontend-builder /app/dist /usr/share/nginx/html
-COPY nginx.config /etc/nginx/conf.d/default.conf
-
-# 启动脚本 替换__BACKEND_API_URL__为实际地址
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-EXPOSE 80 3000 8080 1601
+EXPOSE 3000 8080 1601
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000 || exit 1
+    CMD curl -f http://10.147.17.104:3000 || exit 1
 
 # 启动所有服务
-CMD ["/entrypoint.sh", "./start_genie.sh"]
+CMD ["./start_genie.sh"]
