@@ -119,11 +119,10 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 80 3000 8080 1601
-CMD ["/entrypoint.sh"]
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3000 || exit 1
 
 # 启动所有服务
-CMD ["./start_genie.sh"]
+CMD ["/entrypoint.sh", "./start_genie.sh"]
