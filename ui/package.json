@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build --mode production",
+    "build1": "NODE_OPTIONS=--max-old-space-size=4096 vite build --mode production",
+    "build:docker": "NODE_OPTIONS=--max-old-space-size=4096 vite build --outDir ./docker/dist/",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "preview": "vite preview"

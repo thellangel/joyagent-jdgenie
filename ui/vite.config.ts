@@ -21,10 +21,12 @@ export default defineConfig((mode) => ({
     // 修改为监听所有接口，而不是特定主机名
     host: '0.0.0.0',
     port: 3000,
+    cors: true,
     proxy: {
-      '/web': {
+      '/backend_api': {
         target: serverBaseUrl,
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/backend_api/, '/web'),
       },
     },
   },

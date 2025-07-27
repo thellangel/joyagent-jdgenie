@@ -5,7 +5,8 @@ RUN npm install -g pnpm
 COPY ui/package.json ui/pnpm-lock.yaml ./
 RUN pnpm install
 COPY ui/ .
-RUN pnpm build
+ENV BACKEND_API_URL=__BACKEND_API_URL__
+RUN pnpm build1
 
 # 后端构建阶段
 FROM docker.m.daocloud.io/library/maven:3.8-openjdk-17 as backend-builder
@@ -109,7 +110,16 @@ WORKDIR /app
 COPY start_genie.sh .
 RUN chmod +x start_genie.sh
 
-EXPOSE 3000 8080 1601
+FROM registry.handiansoft.net/nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.config /etc/nginx/conf.d/default.conf
+
+# 启动脚本 替换__BACKEND_API_URL__为实际地址
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+EXPOSE 80 3000 8080 1601
+CMD ["/entrypoint.sh"]
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
